@@ -1,0 +1,148 @@
+Generate a clean, production-style codebase for a responsive web app called “Zoom Planner”.
+
+Primary objective:
+Create a well-structured React + TypeScript project that I can run locally, modify easily, and deploy anywhere (not tied to Replit hosting). Prioritise maintainable code architecture over “one-click demo” behaviour.
+
+Stack:
+- React + TypeScript using Vite
+- React Router
+- Firebase Web SDK:
+  - Firebase Authentication (email/password)
+  - Cloud Firestore
+- Styling: Tailwind CSS (or simple CSS modules if easier, but keep the UI clean and minimal)
+- Client-only app (no custom backend server)
+
+Architecture requirements:
+- Firebase config and initialization must live in a single module:
+  - /src/lib/firebase.ts
+- Create a small data/service layer that is the only place that talks to Firestore:
+  - /src/services/tasks.ts
+  - /src/services/goals.ts
+  - /src/services/habits.ts
+- Shared types in:
+  - /src/types/*
+- Reusable UI components in:
+  - /src/components/*
+- Route-level pages in:
+  - /src/pages/*
+- Use React hooks + local state where possible. Avoid heavy global state frameworks unless necessary.
+
+Firestore data structure (store everything per-user):
+
+users/{uid}/goals/{goalId}
+- title (string)
+- description (string, optional)
+- timeframe ("year" | "month" | "week")
+- startDate (YYYY-MM-DD string, optional)
+- endDate (YYYY-MM-DD string, optional)
+- status ("active" | "paused" | "done")
+- parentGoalId (string, optional)   // allows Year -> Month -> Week linking
+- createdAt (timestamp)
+
+users/{uid}/tasks/{taskId}
+- title (string)
+- date (YYYY-MM-DD string)
+- status ("todo" | "doing" | "done")
+- linkedGoalId (string, optional)
+- notes (string, optional)
+- isPriority (boolean, default false)   // used for weekly priorities
+- createdAt (timestamp)
+
+users/{uid}/habits/{habitId}
+- name (string)
+- isActive (boolean)
+- schedule ("daily" | "weekdays")
+- createdAt (timestamp)
+
+users/{uid}/habitLogs/{logId}
+- habitId (string)
+- date (YYYY-MM-DD string)
+- completed (boolean)
+
+Navigation structure:
+Tabs or sidebar navigation:
+- Day
+- Week
+- Month
+- Year
+- Goals
+- Habits
+- Settings
+
+Screens (MVP scope):
+
+1) Auth
+- Sign up
+- Log in
+- Log out
+- After successful login redirect to Week view
+
+2) Week (default landing view)
+- Display current week (Mon–Sun)
+- Show tasks grouped by day
+- Allow toggling task status (todo/doing/done)
+- Weekly priorities section:
+  - Display tasks where isPriority = true
+  - Enforce max 5 priorities in the UI (soft limit: prevent setting more than 5 active priorities at once)
+- Show today’s habits with quick checkboxes
+
+3) Day
+- Date selector
+- Quick Add task input (title only)
+- Task list for selected date
+- Toggle isPriority flag from task row
+- Habit checklist for selected date (writes/updates habitLogs)
+
+4) Month
+- Calendar grid view
+- Show task count per day
+- Clicking a day navigates to Day view
+
+5) Year
+- List yearly goals
+- Display monthly goals grouped by month (based on startDate when available)
+- Clicking a goal opens Goal detail
+
+6) Goals
+- List and filter goals by timeframe (year/month/week)
+- Goal detail view:
+  - Edit fields
+  - Show child goals (parentGoalId)
+  - Show linked tasks
+
+7) Habits
+- Create and edit habits
+- Toggle active/inactive
+- Minimal weekly summary per habit (example: “4 / 7 days completed”)
+
+8) Settings
+- Button: “Add starter habits”
+  - Creates Vitamins, Water, Stretch, Go outside
+- Account actions:
+  - Log out
+
+Core UX rules:
+- Creating a task requires only a title
+- All other fields are optional and editable later
+- Avoid large dashboards and over-complicated forms
+- Provide clean empty states
+- Keep interactions fast and low friction
+
+Date handling:
+- Use YYYY-MM-DD string format for day grouping and filtering
+- Centralise date utilities in a small helper file (for week ranges, today, etc)
+
+Security:
+- Include a firestore.rules file snippet that restricts all read/write access to authenticated users under their own users/{uid}/... path
+
+Local dev + deployment requirements:
+- Include scripts:
+  - dev
+  - build
+  - preview
+- Provide a README explaining:
+  - How to run locally
+  - Where to place Firebase env variables (VITE_FIREBASE_API_KEY, etc)
+  - How to deploy to Firebase Hosting or Vercel (brief steps only)
+
+If anything is unclear, make sensible defaults and build a functional MVP without blocking on extra questions.
