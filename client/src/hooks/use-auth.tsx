@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
-import { 
-  User, 
-  signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword, 
+import {
+  User,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
   signOut as firebaseSignOut,
   onAuthStateChanged,
   browserLocalPersistence,
@@ -43,7 +43,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const signIn = async (email: string, pass: string) => {
-    if (!auth) return;
+    if (!auth) {
+      toast({ variant: "destructive", title: "Configuration Error", description: "Firebase is not correctly configured." });
+      throw new Error("Firebase is not correctly configured.");
+    }
     try {
       await setPersistence(auth, browserLocalPersistence);
       await signInWithEmailAndPassword(auth, email, pass);
@@ -51,27 +54,30 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       toast({ title: "Welcome back!", description: "Successfully signed in." });
     } catch (error: any) {
       console.error(error);
-      toast({ 
+      toast({
         variant: "destructive",
-        title: "Login failed", 
-        description: error.message || "Please check your credentials." 
+        title: "Login failed",
+        description: error.message || "Please check your credentials."
       });
       throw error;
     }
   };
 
   const signUp = async (email: string, pass: string) => {
-    if (!auth) return;
+    if (!auth) {
+      toast({ variant: "destructive", title: "Configuration Error", description: "Firebase is not correctly configured." });
+      throw new Error("Firebase is not correctly configured.");
+    }
     try {
       await createUserWithEmailAndPassword(auth, email, pass);
       setLocation("/week");
       toast({ title: "Account created", description: "Welcome to Zoom Planner!" });
     } catch (error: any) {
       console.error(error);
-      toast({ 
+      toast({
         variant: "destructive",
-        title: "Signup failed", 
-        description: error.message || "Could not create account." 
+        title: "Signup failed",
+        description: error.message || "Could not create account."
       });
       throw error;
     }
