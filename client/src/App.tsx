@@ -4,6 +4,7 @@ import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { AuthProvider, useAuth } from "@/hooks/use-auth";
 import { Sidebar } from "@/components/Sidebar";
+import { MobileNav } from "@/components/MobileNav";
 
 import AuthPage from "@/pages/AuthPage";
 import DayView from "@/pages/DayView";
@@ -30,9 +31,10 @@ function ProtectedRoute({ component: Component }: { component: React.ComponentTy
   if (!user) return <Redirect to="/" />;
 
   return (
-    <div className="flex min-h-screen bg-background text-foreground font-sans">
+    <div className="flex flex-col md:flex-row min-h-screen bg-background text-foreground font-sans">
       <Sidebar />
-      <main className="flex-1 p-4 md:p-8 overflow-y-auto h-screen">
+      <MobileNav />
+      <main className="flex-1 p-4 md:p-8 overflow-y-auto h-[calc(100vh-64px)] md:h-screen">
         <div className="max-w-7xl mx-auto h-full">
           <Component />
         </div>
