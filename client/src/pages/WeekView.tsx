@@ -7,12 +7,15 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { useZoom } from "@/components/zoom/zoom-store";
+
 export default function WeekView() {
-  const [currentDate, setCurrentDate] = useState(new Date());
-  
+  const { focusDate, setFocusDate } = useZoom();
+  const currentDate = focusDate;
+
   const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
   const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
-  
+
   const { data: tasks, isLoading } = useTasks(
     format(weekStart, "yyyy-MM-dd"),
     format(weekEnd, "yyyy-MM-dd")
@@ -20,8 +23,8 @@ export default function WeekView() {
 
   const days = eachDayOfInterval({ start: weekStart, end: weekEnd });
 
-  const nextWeek = () => setCurrentDate(addWeeks(currentDate, 1));
-  const prevWeek = () => setCurrentDate(subWeeks(currentDate, 1));
+  const nextWeek = () => setFocusDate(addWeeks(currentDate, 1));
+  const prevWeek = () => setFocusDate(subWeeks(currentDate, 1));
 
   if (isLoading) return <div className="p-8">Loading week...</div>;
 
@@ -32,10 +35,10 @@ export default function WeekView() {
           <h2 className="text-3xl font-serif font-bold text-foreground">Weekly Overview</h2>
           <p className="text-muted-foreground">{format(weekStart, "MMM d")} - {format(weekEnd, "MMM d, yyyy")}</p>
         </div>
-        
+
         <div className="flex items-center gap-2">
           <Button variant="outline" size="icon" onClick={prevWeek}><ChevronLeft className="w-4 h-4" /></Button>
-          <Button variant="outline" onClick={() => setCurrentDate(new Date())}>Today</Button>
+          <Button variant="outline" onClick={() => setFocusDate(new Date())}>Today</Button>
           <Button variant="outline" size="icon" onClick={nextWeek}><ChevronRight className="w-4 h-4" /></Button>
           <div className="ml-2">
             <TaskDialog defaultDate={format(new Date(), "yyyy-MM-dd")} />
@@ -60,7 +63,7 @@ export default function WeekView() {
                   {format(day, "d")}
                 </div>
               </div>
-              
+
               <div className="space-y-2 flex-1">
                 {dayTasks.map(task => (
                   <TaskCard key={task.id} task={task} />

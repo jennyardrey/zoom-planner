@@ -8,9 +8,11 @@ import {
     Settings,
     LogOut,
     Layout,
-    Menu
+    Menu,
+    SlidersHorizontal
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useZoom } from "@/components/zoom/zoom-store";
 import {
     Sheet,
     SheetContent,
@@ -33,10 +35,14 @@ export function MobileNav() {
     const [location] = useLocation();
     const { signOut } = useAuth();
     const [open, setOpen] = useState(false);
+    const { toggleDrawer } = useZoom();
 
     return (
         <div className="md:hidden border-b border-border bg-card p-4 flex items-center justify-between sticky top-0 z-50">
             <div className="flex items-center gap-2">
+                <Button variant="ghost" size="icon" onClick={toggleDrawer} className="-ml-2">
+                    <SlidersHorizontal className="h-5 w-5" />
+                </Button>
                 <h1 className="text-xl font-serif font-bold text-primary tracking-tight">Zoom Planner</h1>
             </div>
 

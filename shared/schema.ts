@@ -30,6 +30,9 @@ export const taskSchema = z.object({
   uid: z.string(),
   title: z.string(),
   date: z.string(), // YYYY-MM-DD
+  timeStart: z.string().nullable(), // HH:mm
+  timeEnd: z.string().nullable(), // HH:mm
+  allDay: z.boolean().default(false),
   status: taskStatusEnum,
   linkedGoalId: z.string().optional(),
   notes: z.string().optional(),
