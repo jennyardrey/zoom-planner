@@ -4,11 +4,12 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useTasks } from "@/hooks/use-tasks";
-
+import type { Task } from "@shared/schema";
 import { useZoom } from "@/components/zoom/zoom-store";
 
 export default function MonthView() {
   const { focusDate, setFocusDate } = useZoom();
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const currentDate = focusDate;
 
   const monthStart = startOfMonth(currentDate);
@@ -20,6 +21,14 @@ export default function MonthView() {
     format(calendarStart, "yyyy-MM-dd"),
     format(calendarEnd, "yyyy-MM-dd")
   );
+
+  const getTaskIntesity = (tasks: Task[]) => {
+    const taskCount = tasks.length;
+    if (taskCount === 0) return "";
+    if (taskCount <= 3) return "bg-green-500/20";
+    if (taskCount <= 6) return "bg-yellow-500/20";
+    return "bg-red-500/20";
+  }
 
   const days = eachDayOfInterval({ start: calendarStart, end: calendarEnd });
 
@@ -47,9 +56,10 @@ export default function MonthView() {
           const dateKey = format(day, "yyyy-MM-dd");
           const dayTasks = tasks?.filter(t => t.date === dateKey) || [];
           const isCurrentMonth = isSameMonth(day, currentDate);
+          console.log("tasks: ", tasks)
 
           return (
-            <div key={dateKey} className={cn("bg-card p-2 min-h-[100px] flex flex-col gap-1", !isCurrentMonth && "bg-secondary/30 text-muted-foreground")}>
+            <div key={dateKey} className={cn("bg-card p-2 min-h-[100px] flex flex-col gap-1", !isCurrentMonth && "bg-secondary/30 text-muted-foreground", getTaskIntesity(dayTasks))}>
               <div className={cn(
                 "w-6 h-6 flex items-center justify-center rounded-full text-xs font-medium ml-auto",
                 isToday(day) ? "bg-primary text-primary-foreground" : "text-muted-foreground"
