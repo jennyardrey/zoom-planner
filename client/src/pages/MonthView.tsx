@@ -6,10 +6,12 @@ import { cn } from "@/lib/utils";
 import { useTasks } from "@/hooks/use-tasks";
 import type { Task } from "@shared/schema";
 import { useZoom } from "@/components/zoom/zoom-store";
+import DayDetailDrawer from "@/components/DayDetailDrawer";
 
 export default function MonthView() {
   const { focusDate, setFocusDate } = useZoom();
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [open, setOpen] = useState(false);
   const currentDate = focusDate;
 
   const monthStart = startOfMonth(currentDate);
@@ -59,30 +61,19 @@ export default function MonthView() {
           console.log("tasks: ", tasks)
 
           return (
-            <div key={dateKey} className={cn("bg-card p-2 min-h-[100px] flex flex-col gap-1", !isCurrentMonth && "bg-secondary/30 text-muted-foreground", getTaskIntesity(dayTasks))}>
+            <div onClick={() => { setOpen(true); setSelectedDate(day) }} key={dateKey} className={cn("bg-card p-2 min-h-[100px] flex flex-col gap-1", !isCurrentMonth && "bg-secondary/30 text-muted-foreground", getTaskIntesity(dayTasks))}>
               <div className={cn(
                 "w-6 h-6 flex items-center justify-center rounded-full text-xs font-medium ml-auto",
                 isToday(day) ? "bg-primary text-primary-foreground" : "text-muted-foreground"
               )}>
                 {format(day, "d")}
               </div>
-              <div className="flex-1 space-y-1 overflow-hidden">
-                {dayTasks.slice(0, 3).map(task => (
-                  <div key={task.id} className={cn(
-                    "text-[10px] truncate px-1.5 py-0.5 rounded border border-transparent",
-                    task.status === "done" ? "line-through text-muted-foreground bg-secondary" : "bg-primary/5 text-primary border-primary/10"
-                  )}>
-                    {task.title}
-                  </div>
-                ))}
-                {dayTasks.length > 3 && (
-                  <div className="text-[10px] text-muted-foreground pl-1">+ {dayTasks.length - 3} more</div>
-                )}
-              </div>
             </div>
           );
         })}
       </div>
+      <DayDetailDrawer open={open}
+        date={selectedDate} />
     </div>
   );
 }

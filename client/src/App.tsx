@@ -11,6 +11,7 @@ import DayView from "@/pages/DayView";
 import WeekView from "@/pages/WeekView";
 import MonthView from "@/pages/MonthView";
 import GoalsPage from "@/pages/GoalsPage";
+import YearView from "@/pages/YearView";
 import HabitsPage from "@/pages/HabitsPage";
 import SettingsPage from "@/pages/SettingsPage";
 import NotFound from "@/pages/not-found";
@@ -148,11 +149,11 @@ function Router() {
         <ProtectedRoute component={MonthView} />
       </Route>
       <Route path="/year/:year?">
-        {/* Placeholder for YearView if not exists, reusing GoalsPage or similar? Plan didn't specify YearView creation, using GoalsPage as reasonable fallback or check if exists? */}
-        {/* Plan said: "/year/:year". I'll use GoalsPage as it likely has year view or just redirect to goals for now. Wait, user asked for "Year -> Month -> Week". 
-            I'll use GoalsPage as it seems to be the high level view. */}
-        <ProtectedRoute component={GoalsPage} />
+        <ProtectedRoute component={YearView} />
       </Route>
+      {/* Placeholder for YearView if not exists, reusing GoalsPage or similar? Plan didn't specify YearView creation, using GoalsPage as reasonable fallback or check if exists? */}
+      {/* Plan said: "/year/:year". I'll use GoalsPage as it likely has year view or just redirect to goals for now. Wait, user asked for "Year -> Month -> Week". 
+            I'll use GoalsPage as it seems to be the high level view. */}
 
       {/* Legacy/Other Routes */}
       <Route path="/goals">

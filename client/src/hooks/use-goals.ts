@@ -6,13 +6,15 @@ import { useToast } from "./use-toast";
 
 export function useGoals() {
   const { user } = useAuth();
-  
+
   return useQuery({
     queryKey: ["goals", user?.uid],
     queryFn: () => user ? GoalService.getUserGoals(user.uid) : Promise.resolve([]),
     enabled: !!user,
   });
 }
+
+// you are trying to fix the create goal to use the new form data you changed in the year view dialogue
 
 export function useCreateGoal() {
   const { user } = useAuth();
@@ -21,6 +23,7 @@ export function useCreateGoal() {
 
   return useMutation({
     mutationFn: (goal: InsertGoal) => {
+      console.log('goal: ', goal)
       if (!user) throw new Error("Not authenticated");
       return GoalService.createGoal(user.uid, goal);
     },
