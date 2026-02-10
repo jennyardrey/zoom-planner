@@ -23,7 +23,6 @@ export function useCreateGoal() {
 
   return useMutation({
     mutationFn: (goal: InsertGoal) => {
-      console.log('goal: ', goal)
       if (!user) throw new Error("Not authenticated");
       return GoalService.createGoal(user.uid, goal);
     },

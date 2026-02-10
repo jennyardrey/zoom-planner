@@ -21,7 +21,6 @@ export default function YearView() {
 
     const getThisYear = () => {
         const thisYear = (new Date()).getFullYear();
-        console.log('thisYear: ', thisYear);
         return thisYear;
     }
 
@@ -46,23 +45,19 @@ export default function YearView() {
 
     const getAllYears = () => {
         const current = new Date();
-        // Generates a range from 5 years ago to 5 years in the future
         return eachYearOfInterval({
             start: subYears(current, 5),
             end: addYears(current, 50)
         }).map(date => date.getFullYear());
     }
 
-    // Define this BEFORE the sections array
     const yearsWithTasks: { label: string, value: string, color: string }[] = [];
     goals?.forEach(goal => {
         if (!yearsWithTasks.find(y => y.value === goal.timeframe)) {
             yearsWithTasks.push({ label: goal.timeframe, value: goal.timeframe, color: "text-purple-600 bg-purple-50" });
         }
     });
-    console.log(yearsWithTasks);
-    console.log(goals)
-    // Now use the result
+
     const sections = yearsWithTasks
 
     return (
