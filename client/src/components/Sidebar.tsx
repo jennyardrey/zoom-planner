@@ -1,15 +1,18 @@
 import { Link, useLocation } from "wouter";
 import { cn } from "@/lib/utils";
-import { 
-  CalendarDays, 
-  CalendarRange, 
-  Target, 
-  CheckCircle, 
-  Settings, 
-  LogOut, 
-  Layout
+import {
+  CalendarDays,
+  CalendarRange,
+  Target,
+  CheckCircle,
+  Settings,
+  LogOut,
+  Layout,
+  SlidersHorizontal
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useZoom } from "@/components/zoom/zoom-store";
+import { Button } from "@/components/ui/button";
 
 const items = [
   { href: "/day", icon: Layout, label: "Day View" },
@@ -22,12 +25,18 @@ const items = [
 export function Sidebar() {
   const [location] = useLocation();
   const { signOut } = useAuth();
+  const { toggleDrawer } = useZoom();
 
   return (
     <aside className="w-64 bg-card border-r border-border h-screen flex flex-col hidden md:flex sticky top-0">
-      <div className="p-6 border-b border-border/40">
-        <h1 className="text-2xl font-serif font-bold text-primary tracking-tight">Zoom Planner</h1>
-        <p className="text-xs text-muted-foreground mt-1 tracking-wide uppercase">Focus & Execute</p>
+      <div className="p-6 border-b border-border/40 flex items-center justify-between">
+        <div>
+          <h1 className="text-2xl font-serif font-bold text-primary tracking-tight">Zoom</h1>
+          <p className="text-xs text-muted-foreground mt-1 tracking-wide uppercase">Planner</p>
+        </div>
+        <Button variant="ghost" size="icon" onClick={toggleDrawer} title="Zoom Levels">
+          <SlidersHorizontal className="h-5 w-5" />
+        </Button>
       </div>
 
       <nav className="flex-1 p-4 space-y-2">
@@ -61,7 +70,7 @@ export function Sidebar() {
             Settings
           </div>
         </Link>
-        <button 
+        <button
           onClick={() => signOut()}
           className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-destructive hover:bg-destructive/10 transition-all text-left"
         >

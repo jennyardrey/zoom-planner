@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button";
 import { ChevronLeft, ChevronRight, Check } from "lucide-react";
 import { cn } from "@/lib/utils";
 
+import { useZoom } from "@/components/zoom/zoom-store";
+
 export default function DayView() {
-  const [date, setDate] = useState(new Date());
+  const { focusDate, setFocusDate } = useZoom();
+  const date = focusDate;
   const dateKey = format(date, "yyyy-MM-dd");
-  
+
   const { data: tasks, isLoading: loadingTasks } = useTasks(dateKey, dateKey);
   const { data: habits } = useHabits();
   const { data: logs } = useHabitLogs(dateKey, dateKey);
@@ -24,12 +27,12 @@ export default function DayView() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => setDate(subDays(date, 1))}><ChevronLeft className="w-5 h-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => setFocusDate(subDays(date, 1))}><ChevronLeft className="w-5 h-5" /></Button>
           <div className="text-center">
             <h2 className="text-3xl font-serif font-bold">{isToday(date) ? "Today" : format(date, "EEEE")}</h2>
             <p className="text-muted-foreground">{format(date, "MMMM d, yyyy")}</p>
           </div>
-          <Button variant="ghost" size="icon" onClick={() => setDate(addDays(date, 1))}><ChevronRight className="w-5 h-5" /></Button>
+          <Button variant="ghost" size="icon" onClick={() => setFocusDate(addDays(date, 1))}><ChevronRight className="w-5 h-5" /></Button>
         </div>
         <TaskDialog defaultDate={dateKey} />
       </div>
@@ -59,13 +62,13 @@ export default function DayView() {
             {activeHabits.map(habit => {
               const isCompleted = logs?.some(l => l.habitId === habit.id && l.completed);
               return (
-                <div 
-                  key={habit.id} 
+                <div
+                  key={habit.id}
                   onClick={() => toggleHabit.mutate({ habitId: habit.id, date: dateKey, completed: !isCompleted })}
                   className={cn(
                     "flex items-center justify-between p-3 rounded-lg cursor-pointer transition-all border",
-                    isCompleted 
-                      ? "bg-primary text-primary-foreground border-primary" 
+                    isCompleted
+                      ? "bg-primary text-primary-foreground border-primary"
                       : "bg-secondary/30 hover:bg-secondary border-transparent"
                   )}
                 >

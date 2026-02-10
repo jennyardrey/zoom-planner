@@ -6,7 +6,7 @@ import { z } from "zod";
 // but the data will effectively be stored in Firestore as per requirements.
 // However, defining Zod schemas here is useful for shared types.
 
-export const timeframeEnum = z.enum(["year", "month", "week"]);
+export const timeframeEnum = z.string();
 export const goalStatusEnum = z.enum(["active", "paused", "done"]);
 export const taskStatusEnum = z.enum(["todo", "doing", "done"]);
 export const scheduleEnum = z.enum(["daily", "weekdays"]);
@@ -30,6 +30,9 @@ export const taskSchema = z.object({
   uid: z.string(),
   title: z.string(),
   date: z.string(), // YYYY-MM-DD
+  timeStart: z.string().nullable(), // HH:mm
+  timeEnd: z.string().nullable(), // HH:mm
+  allDay: z.boolean().default(false),
   status: taskStatusEnum,
   linkedGoalId: z.string().optional(),
   notes: z.string().optional(),

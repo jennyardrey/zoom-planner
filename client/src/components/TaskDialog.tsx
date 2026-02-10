@@ -18,17 +18,22 @@ interface TaskDialogProps {
 export function TaskDialog({ defaultDate }: TaskDialogProps) {
   const [open, setOpen] = useState(false);
   const createTask = useCreateTask();
-  
+
   const form = useForm<InsertTask>({
     resolver: zodResolver(insertTaskSchema),
     defaultValues: {
       title: "",
       date: defaultDate || format(new Date(), "yyyy-MM-dd"),
+      allDay: false,
+      timeStart: "",
+      timeEnd: "",
       status: "todo",
       isPriority: false,
       notes: ""
     }
   });
+
+
 
   const onSubmit = async (data: InsertTask) => {
     try {
@@ -59,15 +64,40 @@ export function TaskDialog({ defaultDate }: TaskDialogProps) {
           </div>
 
           <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 ">
               <Label>Date</Label>
               <Input type="date" {...form.register("date")} />
             </div>
+            <div className="space-y-2 col-span-full">
+              <Label className="mr-2">All Day</Label>
+              <Checkbox
+                checked={form.watch("allDay")}
+                onCheckedChange={(c) => {
+                  form.setValue("allDay", c === true);
+                  if (c === true) {
+                    form.setValue("timeStart", null);
+                    form.setValue("timeEnd", null);
+                  }
+                }}
+              />
+            </div>
+            {!form.watch("allDay") && (
+              <>
+                <div className="space-y-2">
+                  <Label>Start Time</Label>
+                  <Input type="time" {...form.register("timeStart")} />
+                </div>
+                <div className="space-y-2">
+                  <Label>End Time</Label>
+                  <Input type="time" {...form.register("timeEnd")} />
+                </div>
+              </>
+            )}
             <div className="flex items-center space-x-2 pt-8">
-              <Checkbox 
-                id="priority" 
-                checked={form.watch("isPriority")} 
-                onCheckedChange={(c) => form.setValue("isPriority", c === true)} 
+              <Checkbox
+                id="priority"
+                checked={form.watch("isPriority")}
+                onCheckedChange={(c) => form.setValue("isPriority", c === true)}
               />
               <Label htmlFor="priority" className="cursor-pointer font-normal">High Priority</Label>
             </div>
