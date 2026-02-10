@@ -22,7 +22,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { useEffect, useRef } from "react";
 
-// Protected Route Wrapper
 function ProtectedRoute({ component: Component }: { component: React.ComponentType }) {
   const { user, loading } = useAuth();
 
@@ -67,24 +66,21 @@ function ZoomTransition({ children }: { children: React.ReactNode }) {
   const prevDepthRef = useRef<number>(getRouteDepth(location));
   const currentDepth = getRouteDepth(location);
 
-  // Calculate direction synchronously
   let direction = 'in';
   if (currentDepth < prevDepthRef.current) {
     direction = 'out';
   } else if (currentDepth > prevDepthRef.current) {
     direction = 'in';
   } else {
-    // If depth is same, default to 'in'
     direction = 'in';
   }
 
-  // Update ref AFTER render (for next time)
+
   useEffect(() => {
     prevDepthRef.current = currentDepth;
   }, [currentDepth]);
 
-  // Animation variants
-  // Animation variants
+
   const variants = {
     initial: (direction: string) => ({
       scale: direction === 'in' ? 0.95 : (direction === 'out' ? 1.05 : 1),
@@ -151,11 +147,6 @@ function Router() {
       <Route path="/year/:year?">
         <ProtectedRoute component={YearView} />
       </Route>
-      {/* Placeholder for YearView if not exists, reusing GoalsPage or similar? Plan didn't specify YearView creation, using GoalsPage as reasonable fallback or check if exists? */}
-      {/* Plan said: "/year/:year". I'll use GoalsPage as it likely has year view or just redirect to goals for now. Wait, user asked for "Year -> Month -> Week". 
-            I'll use GoalsPage as it seems to be the high level view. */}
-
-      {/* Legacy/Other Routes */}
       <Route path="/goals">
         <ProtectedRoute component={GoalsPage} />
       </Route>
@@ -165,9 +156,6 @@ function Router() {
       <Route path="/settings">
         <ProtectedRoute component={SettingsPage} />
       </Route>
-
-      {/* Fallback for old routes to redirect to new structure? Wouter doesn't do regex redirects easily here. 
-          I'll just let the new routes handle params. /week without params is captured by :date? */}
 
       <Route component={NotFound} />
     </Switch>
