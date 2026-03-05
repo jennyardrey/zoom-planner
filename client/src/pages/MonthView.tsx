@@ -51,7 +51,7 @@ export default function MonthView() {
           </div>
         </div>
 
-        <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden border border-border flex-1 min-h-[600px]">
+        <div className="grid grid-cols-7 gap-px bg-border rounded-lg overflow-hidden border border-border flex-1 min-h-[60vh]">
           {["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"].map(day => (
             <div key={day} className="bg-card p-2 text-center text-xs font-semibold text-muted-foreground uppercase tracking-wider">
               {day}
@@ -61,10 +61,9 @@ export default function MonthView() {
             const dateKey = format(day, "yyyy-MM-dd");
             const dayTasks = tasks?.filter(t => t.date === dateKey) || [];
             const isCurrentMonth = isSameMonth(day, currentDate);
-            console.log("tasks: ", tasks)
 
             return (
-              <div onClick={() => { setOpen(true); setSelectedDate(day) }} key={dateKey} className={cn("bg-card p-2 min-h-[100px] flex flex-col gap-1", !isCurrentMonth && "bg-secondary/30 text-muted-foreground", getTaskIntesity(dayTasks))}>
+              <div onClick={() => { setOpen(true); setSelectedDate(day) }} key={dateKey} className={cn("bg-card p-2 h-1/1 flex flex-col gap-1", !isCurrentMonth && "bg-secondary/30 text-muted-foreground", getTaskIntesity(dayTasks))}>
                 <div className={cn(
                   "w-6 h-6 flex items-center justify-center rounded-full text-xs font-medium ml-auto",
                   isToday(day) ? "bg-primary text-primary-foreground" : "text-muted-foreground"
