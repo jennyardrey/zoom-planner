@@ -13,13 +13,18 @@ import { Plus } from "lucide-react";
 
 interface TaskDialogProps {
   defaultDate?: string;
+  defaultTimeStart?: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
   buttonText?: string;
   variant?: "default" | "outline" | "ghost";
   size?: "default" | "sm" | "lg";
 }
 
-export function TaskDialog({ defaultDate, buttonText, variant, size }: TaskDialogProps) {
-  const [open, setOpen] = useState(false);
+export function TaskDialog({ defaultDate, defaultTimeStart, open, onOpenChange, buttonText, variant, size }: TaskDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const dialogOpen = open !== undefined ? open : internalOpen;
+  const setDialogOpen = onOpenChange ?? setInternalOpen;
   const createTask = useCreateTask();
 
   const form = useForm<InsertTask>({
@@ -28,7 +33,7 @@ export function TaskDialog({ defaultDate, buttonText, variant, size }: TaskDialo
       title: "",
       date: defaultDate || format(new Date(), "yyyy-MM-dd"),
       allDay: false,
-      timeStart: "",
+      timeStart: defaultTimeStart || "",
       timeEnd: "",
       status: "todo",
       isPriority: false,
@@ -36,25 +41,25 @@ export function TaskDialog({ defaultDate, buttonText, variant, size }: TaskDialo
     }
   });
 
-
-
   const onSubmit = async (data: InsertTask) => {
     try {
       await createTask.mutateAsync(data);
       form.reset();
-      setOpen(false);
+      setDialogOpen(false);
     } catch (e) {
       console.error(e);
     }
   };
 
   return (
-    <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button variant={variant} size={size} className={` ${variant === "ghost" ? "w-full text-left text-xs text-muted-foreground/50 p-2 hover:bg-secondary/50 rounded transition-colors" : "shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"}`}>
-          <Plus className="w-4 h-4 mr-2" /> {buttonText ? buttonText : "Add Task"}
-        </Button>
-      </DialogTrigger>
+    <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+      {open === undefined && (
+        <DialogTrigger asChild>
+          <Button variant={variant} size={size} className={` ${variant === "ghost" ? "w-full text-left text-xs text-muted-foreground/50 p-2 hover:bg-secondary/50 rounded transition-colors" : "shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"}`}>
+            <Plus className="w-4 h-4 mr-2" /> {buttonText ? buttonText : "Add Task"}
+          </Button>
+        </DialogTrigger>
+      )}
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>New Task</DialogTitle>
