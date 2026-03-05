@@ -68,11 +68,8 @@ export default function WeekView() {
                 {dayTasks.map(task => (
                   <TaskCard key={task.id} task={task} />
                 ))}
-                {dayTasks.length === 0 && (
-                  <button className="w-full text-left text-xs text-muted-foreground/50 p-2 hover:bg-secondary/50 rounded transition-colors">
-                    + Click to add
-                  </button>
-                )}
+                <TaskDialog defaultDate={dateKey} buttonText="Click to add" variant="ghost" size="sm" />
+
               </div>
             </div>
           );

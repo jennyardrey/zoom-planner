@@ -13,9 +13,12 @@ import { Plus } from "lucide-react";
 
 interface TaskDialogProps {
   defaultDate?: string;
+  buttonText?: string;
+  variant?: "default" | "outline" | "ghost";
+  size?: "default" | "sm" | "lg";
 }
 
-export function TaskDialog({ defaultDate }: TaskDialogProps) {
+export function TaskDialog({ defaultDate, buttonText, variant, size }: TaskDialogProps) {
   const [open, setOpen] = useState(false);
   const createTask = useCreateTask();
 
@@ -48,8 +51,8 @@ export function TaskDialog({ defaultDate }: TaskDialogProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button className="shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all">
-          <Plus className="w-4 h-4 mr-2" /> Add Task
+        <Button variant={variant} size={size} className={` ${variant === "ghost" ? "w-full text-left text-xs text-muted-foreground/50 p-2 hover:bg-secondary/50 rounded transition-colors" : "shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all"}`}>
+          <Plus className="w-4 h-4 mr-2" /> {buttonText ? buttonText : "Add Task"}
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
