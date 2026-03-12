@@ -37,7 +37,27 @@ export const taskSchema = z.object({
   linkedGoalId: z.string().optional(),
   notes: z.string().optional(),
   isPriority: z.boolean().default(false),
+  projectId: z.string().optional(),
+  sectionId: z.string().optional(),
+  order: z.number().optional(),
   createdAt: z.string().or(z.date())
+});
+
+export const projectSchema = z.object({
+  id: z.string(),
+  uid: z.string(),
+  name: z.string().min(1, "Name is required"),
+  color: z.string().optional(),
+  createdAt: z.string().or(z.date()),
+});
+
+export const sectionSchema = z.object({
+  id: z.string(),
+  uid: z.string(),
+  projectId: z.string(),
+  name: z.string().min(1, "Name is required"),
+  order: z.number().default(0),
+  createdAt: z.string().or(z.date()),
 });
 
 export const habitSchema = z.object({
@@ -62,17 +82,23 @@ export const insertGoalSchema = goalSchema.omit({ id: true, uid: true, createdAt
 export const insertTaskSchema = taskSchema.omit({ id: true, uid: true, createdAt: true });
 export const insertHabitSchema = habitSchema.omit({ id: true, uid: true, createdAt: true });
 export const insertHabitLogSchema = habitLogSchema.omit({ id: true, uid: true });
+export const insertProjectSchema = projectSchema.omit({ id: true, uid: true, createdAt: true });
+export const insertSectionSchema = sectionSchema.omit({ id: true, uid: true, createdAt: true });
 
 // Export Types
 export type Goal = z.infer<typeof goalSchema>;
 export type Task = z.infer<typeof taskSchema>;
 export type Habit = z.infer<typeof habitSchema>;
 export type HabitLog = z.infer<typeof habitLogSchema>;
+export type Project = z.infer<typeof projectSchema>;
+export type Section = z.infer<typeof sectionSchema>;
 
 export type InsertGoal = z.infer<typeof insertGoalSchema>;
 export type InsertTask = z.infer<typeof insertTaskSchema>;
 export type InsertHabit = z.infer<typeof insertHabitSchema>;
 export type InsertHabitLog = z.infer<typeof insertHabitLogSchema>;
+export type InsertProject = z.infer<typeof insertProjectSchema>;
+export type InsertSection = z.infer<typeof insertSectionSchema>;
 
 // Dummy Drizzle tables to satisfy template if needed (unused in logic)
 export const users = pgTable("users", {

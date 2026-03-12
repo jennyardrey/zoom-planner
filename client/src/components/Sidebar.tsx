@@ -8,7 +8,8 @@ import {
   Settings,
   LogOut,
   Layout,
-  SlidersHorizontal
+  SlidersHorizontal,
+  FolderKanban
 } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { useZoom } from "@/components/zoom/zoom-store";
@@ -20,6 +21,7 @@ const items = [
   { href: "/month", icon: CalendarRange, label: "Month View" },
   { href: "/goals", icon: Target, label: "Goals" },
   { href: "/habits", icon: CheckCircle, label: "Habits" },
+  { href: "/projects", icon: FolderKanban, label: "Projects" },
 ];
 
 export function Sidebar() {
@@ -41,7 +43,9 @@ export function Sidebar() {
 
       <nav className="flex-1 p-4 space-y-2">
         {items.map((item) => {
-          const isActive = location === item.href;
+          const isActive = item.href === "/projects"
+            ? location.startsWith("/projects")
+            : location === item.href;
           return (
             <Link key={item.href} href={item.href}>
               <div

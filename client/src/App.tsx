@@ -14,6 +14,8 @@ import GoalsPage from "@/pages/GoalsPage";
 import YearView from "@/pages/YearView";
 import HabitsPage from "@/pages/HabitsPage";
 import SettingsPage from "@/pages/SettingsPage";
+import ProjectsPage from "@/pages/ProjectsPage";
+import ProjectDetailPage from "@/pages/ProjectDetailPage";
 import NotFound from "@/pages/not-found";
 import { ZoomProvider, useZoom } from "@/components/zoom/zoom-store";
 import { ZoomDrawer } from "@/components/zoom/ZoomDrawer";
@@ -155,6 +157,12 @@ function Router() {
       </Route>
       <Route path="/settings">
         <ProtectedRoute component={SettingsPage} />
+      </Route>
+      <Route path="/projects">
+        <ProtectedRoute component={ProjectsPage} />
+      </Route>
+      <Route path="/projects/:projectId">
+        <ProtectedRoute component={ProjectDetailPage} />
       </Route>
 
       <Route component={NotFound} />

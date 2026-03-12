@@ -3,17 +3,22 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { insertTaskSchema, type InsertTask } from "@shared/schema";
 import { useCreateTask } from "@/hooks/use-tasks";
-import { useState } from "react";
+import { useProjects } from "@/hooks/use-projects";
+import { useProjectSections } from "@/hooks/use-sections";
+import { useState, useEffect } from "react";
 import { format } from "date-fns";
 import { Plus } from "lucide-react";
 
 interface TaskDialogProps {
   defaultDate?: string;
   defaultTimeStart?: string;
+  defaultProjectId?: string;
+  defaultSectionId?: string;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   buttonText?: string;
@@ -21,11 +26,13 @@ interface TaskDialogProps {
   size?: "default" | "sm" | "lg";
 }
 
-export function TaskDialog({ defaultDate, defaultTimeStart, open, onOpenChange, buttonText, variant, size }: TaskDialogProps) {
+export function TaskDialog({ defaultDate, defaultTimeStart, defaultProjectId, defaultSectionId, open, onOpenChange, buttonText, variant, size }: TaskDialogProps) {
   const [internalOpen, setInternalOpen] = useState(false);
   const dialogOpen = open !== undefined ? open : internalOpen;
   const setDialogOpen = onOpenChange ?? setInternalOpen;
   const createTask = useCreateTask();
+
+  const { data: projects = [] } = useProjects();
 
   const form = useForm<InsertTask>({
     resolver: zodResolver(insertTaskSchema),
@@ -37,14 +44,40 @@ export function TaskDialog({ defaultDate, defaultTimeStart, open, onOpenChange, 
       timeEnd: "",
       status: "todo",
       isPriority: false,
-      notes: ""
+      notes: "",
+      projectId: defaultProjectId || "",
+      sectionId: defaultSectionId || "",
     }
   });
 
+  const watchedProjectId = form.watch("projectId");
+  const { data: sections = [] } = useProjectSections(watchedProjectId && watchedProjectId !== "none" ? watchedProjectId : undefined);
+
+  // Reset sectionId when projectId changes
+  useEffect(() => {
+    form.setValue("sectionId", "");
+  }, [watchedProjectId, form]);
+
   const onSubmit = async (data: InsertTask) => {
     try {
-      await createTask.mutateAsync(data);
-      form.reset();
+      const cleaned = {
+        ...data,
+        projectId: data.projectId === "none" || !data.projectId ? undefined : data.projectId,
+        sectionId: data.sectionId === "none" || !data.sectionId ? undefined : data.sectionId,
+      };
+      await createTask.mutateAsync(cleaned);
+      form.reset({
+        title: "",
+        date: defaultDate || format(new Date(), "yyyy-MM-dd"),
+        allDay: false,
+        timeStart: defaultTimeStart || "",
+        timeEnd: "",
+        status: "todo",
+        isPriority: false,
+        notes: "",
+        projectId: defaultProjectId || "",
+        sectionId: defaultSectionId || "",
+      });
       setDialogOpen(false);
     } catch (e) {
       console.error(e);
@@ -109,6 +142,55 @@ export function TaskDialog({ defaultDate, defaultTimeStart, open, onOpenChange, 
               />
               <Label htmlFor="priority" className="cursor-pointer font-normal">High Priority</Label>
             </div>
+          </div>
+
+          {/* Project select */}
+          <div className="space-y-2">
+            <Label>Project</Label>
+            <Select
+              value={watchedProjectId || "none"}
+              onValueChange={(val) => form.setValue("projectId", val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="No project" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No project</SelectItem>
+                {projects.map((project) => (
+                  <SelectItem key={project.id} value={project.id}>
+                    <span className="flex items-center gap-2">
+                      <span
+                        className="inline-block w-2.5 h-2.5 rounded-full"
+                        style={{ backgroundColor: project.color || "#3b82f6" }}
+                      />
+                      {project.name}
+                    </span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Section select */}
+          <div className="space-y-2">
+            <Label>Section</Label>
+            <Select
+              value={form.watch("sectionId") || "none"}
+              onValueChange={(val) => form.setValue("sectionId", val)}
+              disabled={!watchedProjectId || watchedProjectId === "none"}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="No section" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">No section</SelectItem>
+                {sections.map((section) => (
+                  <SelectItem key={section.id} value={section.id}>
+                    {section.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           <div className="flex justify-end pt-2">
